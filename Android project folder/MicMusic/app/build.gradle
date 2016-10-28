@@ -4,7 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "combilbobx182.github.micmusic"
+        applicationId "combilbobx182.github.micmusic2"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 1

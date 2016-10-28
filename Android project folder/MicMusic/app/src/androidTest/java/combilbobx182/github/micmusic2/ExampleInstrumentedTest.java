@@ -1,4 +1,4 @@
-package combilbobx182.github.micmusic;
+package combilbobx182.github.micmusic2;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("combilbobx182.github.micmusic", appContext.getPackageName());
+        assertEquals("combilbobx182.github.micmusic2", appContext.getPackageName());
     }
 }

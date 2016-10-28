@@ -1,4 +1,4 @@
-package combilbobx182.github.micmusic;
+package combilbobx182.github.micmusic2;
 
 import org.junit.Test;
 
