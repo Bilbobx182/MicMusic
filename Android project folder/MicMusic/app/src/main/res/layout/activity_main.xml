@@ -11,11 +11,28 @@
     tools:context="combilbobx182.github.micmusic2.MainActivity">
 
     <Button
-        android:text="Button"
+        android:text="VOLUME STATS"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/vol_btn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="Start Listening"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/btn1"
-        />
+        android:layout_marginBottom="36dp"
+        android:layout_above="@+id/vol_btn"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="VOLUMES: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/volumestats"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="81dp" />
 </RelativeLayout>
