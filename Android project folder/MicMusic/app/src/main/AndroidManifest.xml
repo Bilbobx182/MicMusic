@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AudioDetect" />
-        <activity android:name=".SensitivityListView"></activity>
+        <activity android:name=".SensitivityListView" />
     </application>
 
 </manifest>

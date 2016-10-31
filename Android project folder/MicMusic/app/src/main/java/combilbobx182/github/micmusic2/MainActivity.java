@@ -1,11 +1,15 @@
 package combilbobx182.github.micmusic2;
 
+import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity
@@ -46,7 +50,25 @@ public class MainActivity extends AppCompatActivity
     {
         Log.d("MainActivity","I WAS CLICKED");
         Intent ld = new Intent(this, SensitivityListView.class);
-        startActivity(ld);
+        startActivityForResult(ld,1);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+
+        if (requestCode == 1)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                String result=data.getStringExtra("result");
+                Log.d("MainActivity",result);
+            }
+            if (resultCode == Activity.RESULT_CANCELED)
+            {
+                Log.d("MainActivity","NO RESULT");
+            }
+        }
     }
 }
+

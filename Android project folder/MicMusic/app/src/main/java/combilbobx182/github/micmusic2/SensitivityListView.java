@@ -1,7 +1,7 @@
 package combilbobx182.github.micmusic2;
 
+import android.app.Activity;
 import android.app.ListActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -29,7 +29,12 @@ public class SensitivityListView extends ListActivity
     {
         String selectedValue = (String) getListAdapter().getItem(position);
         Toast.makeText(this, selectedValue, Toast.LENGTH_SHORT).show();
-      //  intent.putExtra("Sensitivity",loudlevel[position]);
-       // startActivity(intent);
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result",loudlevel[position]);
+        setResult(Activity.RESULT_OK,returnIntent);
+        finish();
+        //  intent.putExtra("Sensitivity",loudlevel[position]);
+        // startActivity(intent);
     }
 }
