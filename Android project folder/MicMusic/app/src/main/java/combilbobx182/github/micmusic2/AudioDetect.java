@@ -2,6 +2,7 @@ package combilbobx182.github.micmusic2;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ public class AudioDetect extends AppCompatActivity
 {
     static TextView micstatus;
     protected double amps=0;
+    double sum =0;
     protected MediaRecorder mediarec = null;
 
 
@@ -111,11 +113,37 @@ public class AudioDetect extends AppCompatActivity
 
     private class BackgroundThread extends AsyncTask<String, Integer, String>
     {
+        int count;
+        double avg;
+        long starttime,currenttime;
+        int cur, max,half;
+        AudioManager audio;
+
+        void varsetup()
+        {
+            avg=count=0;
+            starttime=currenttime=0;
+            micstatus.setText("STARTING");
+
+            //setting up audio manager
+            audio = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+            //getting the values of the system volume.
+            cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            half=Math.round (cur/2);
+            max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+
+            //printing it out to make sure it worked. Can be removed later.
+            Log.d("MainActivity.java","MAX"+ String.valueOf(max));
+            Log.d("MainActivity.java","CUR"+ String.valueOf(cur));
+            Log.d("MainActivity.java","HALF VOL"+ String.valueOf(half));
+        }
+
         @Override
         protected void onPreExecute() //Done before
         {
             start();
-            micstatus.setText("STARTING");
+            varsetup();
             super.onPreExecute();
         }
 
@@ -129,13 +157,22 @@ public class AudioDetect extends AppCompatActivity
             {
                 //gets the amplitude and stores it in variable
                 amps = getAmplitude();
-                if (amps != 0)
+                //because passive input is around 30
+                if (amps > 32)
                 {
+                    //having data may be useful at some point. I don't know when though.
+                    count++;
+                    sum =(sum +amps);
+                    avg=sum/count;
                     //logs it to console so I can actually see what it is.
-                    Log.d("AudioDetect.java", String.valueOf(amps));
+                    Log.d("AudioDetect.java", String.valueOf(amps) + "    avg:"+ String.valueOf(avg));
                 }
             }
-            amps = getAmplitude();
+            if(starttime == 0)
+            {
+                volumedown();
+                checktime();
+            }
             //This gets passed to post execute
             return "DONE";
         }
@@ -156,6 +193,31 @@ public class AudioDetect extends AppCompatActivity
             stop();
             super.onPostExecute(result);
             // Do things like hide the progress bar or change a TextView
+        }
+
+        void volumedown()
+        {
+            Log.d("AudioDetect.java", "Current:  " + cur);
+            cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            half=Math.round (cur/2);
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, half, 0);
+            Log.d("AudioDetect.java", "Volume DOWN TO:  " + half);
+        }
+
+        void checktime()
+        {
+            currenttime=starttime=System.currentTimeMillis();
+
+            //Loop to check if 15 sec has passed Gonna make this selectable from a list later
+            while(currenttime<starttime+5000)
+            {
+                //keeps checking until the 15 sec is over
+                currenttime=System.currentTimeMillis();
+                Log.d("AudioDetect.java", "LOOPING");
+            }
+            //raises volume back up after the time is done
+            Log.d("AudioDetect.java", "Back to:  " + cur);
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC,cur, 0);
         }
     }
 }
