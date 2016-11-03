@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/mic"
+        android:icon="@drawable/mic"
+        app:showAsAction="always"
+        android:title="Mic">
+    </item>
+    <item
+        android:id="@+id/headset"
+        android:icon="@drawable/headset"
+        app:showAsAction="always"
+        android:title="Headset">
+    </item>
+    <item
+        android:id="@+id/stats"
+        android:icon="@drawable/stats"
+        app:showAsAction="ifRoom|withText"
+        android:title="stats">
+    </item>
+</menu>

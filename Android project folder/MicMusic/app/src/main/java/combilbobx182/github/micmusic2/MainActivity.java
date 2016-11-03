@@ -1,28 +1,33 @@
 package combilbobx182.github.micmusic2;
 
 import android.app.Activity;
-import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.Toast;
-
 
 public class MainActivity extends AppCompatActivity
 {
+
+    boolean sensitivitywarning = true;
+    String result="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //will be used to go from the welcome screen to the mic recording screen later.
-        //will rename btn1 later.
         final Button golisten = (Button) findViewById(R.id.btn1);
         golisten.setOnClickListener(new View.OnClickListener()
         {
@@ -31,21 +36,62 @@ public class MainActivity extends AppCompatActivity
                 audcall();
             }
         });
-        final Button lv = (Button) findViewById(R.id.ListID);
-        lv.setOnClickListener(new View.OnClickListener()
+    }
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
         {
-            public void onClick(View v)
-            {
+            case R.id.mic:
                 listdisplay();
-            }
-        });
+                return true;
+            case R.id.stats:
+                return true;
+            case R.id.headset:
+
+                return true;
+            default:
+                return true;
+        }
     }
 
     public void audcall()
     {
-        Intent ad = new Intent(this, AudioDetect.class);
-        startActivity(ad);
+        if(sensitivitywarning==true)
+        {
+            warning();
+        }
+        else
+        {
+            Intent ad = new Intent(this, AudioDetect.class);
+            ad.putExtra("sensitivity",result);
+            startActivity(ad);
+        }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == 1)
+        {
+            if(resultCode == Activity.RESULT_OK)
+            {
+                result=data.getStringExtra("result");
+                //because we no longer need to warn them to set the sensitivity.
+                sensitivitywarning=false;
+            }
+            if (resultCode == Activity.RESULT_CANCELED)
+            {
+
+            }
+        }
+    }
+
     public void listdisplay()
     {
         Log.d("MainActivity","I WAS CLICKED");
@@ -53,22 +99,34 @@ public class MainActivity extends AppCompatActivity
         startActivityForResult(ld,1);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    void warning()
     {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+        builder1.setMessage("You didn't select a sensitivity, go by default?");
+        builder1.setCancelable(true);
 
-        if (requestCode == 1)
-        {
-            if(resultCode == Activity.RESULT_OK)
-            {
-                String result=data.getStringExtra("result");
-                Log.d("MainActivity",result);
-            }
-            if (resultCode == Activity.RESULT_CANCELED)
-            {
-                Log.d("MainActivity","NO RESULT");
-            }
-        }
+        builder1.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        Intent ad = new Intent(MainActivity.this, AudioDetect.class);
+                        ad.putExtra("sensitivity","50");
+                        startActivity(ad);
+                        dialog.cancel();
+                    }
+                });
+
+        builder1.setNegativeButton("No",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
     }
 }
-

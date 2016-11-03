@@ -3,3 +3,4 @@ V.0.0.2: Accepts audio input, then displays the max on screen.
 V.0.0.3: Detects android volume levels. Runs the detection of the mic level on a different thread using ASYNC. Commented code.
 V.0.0.4: Added sound listview.
 V.0.0.5: Added in returning values from the activity.
+V.0.0.6: Added passing variables between activities. Added pop up confirmation. Added action bar and icons. Removed buttons. Made listview selection actually do something.

@@ -1,6 +1,7 @@
 package combilbobx182.github.micmusic2;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
@@ -20,6 +21,8 @@ public class AudioDetect extends AppCompatActivity
     protected double amps=0;
     double sum =0;
     protected MediaRecorder mediarec = null;
+    int MAX_AMP=32767;
+    float percent=0;
 
 
     @Override
@@ -30,6 +33,19 @@ public class AudioDetect extends AppCompatActivity
         micstatus = (TextView) findViewById(R.id.micstat);
         boolean mictest = mictest(getApplicationContext());
         //testing to see if the android device has a microphone.
+
+        Intent myIntent = getIntent(); // gets the previously created intent
+        String firstKeyName = myIntent.getStringExtra("sensitivity");
+        Log.d("AUDIO",firstKeyName + "VALUE PASSED IN");
+        Log.d("AudioDetect.java 1)",firstKeyName);
+        Log.d("AudioDetect.java 2)", String.valueOf(firstKeyName) + "/" + String.valueOf(100) + " * " + String.valueOf(32767));
+        percent=Integer.valueOf(firstKeyName);
+        Log.d("AudioDetect.java","PERCENT1"+percent);
+
+        percent=((percent/100) * MAX_AMP);
+        Log.d("AudioDetect.java",""+percent);
+
+
         if (mictest == true)
         {
             micstatus.setText("IT FOUND A MIC");
@@ -125,6 +141,7 @@ public class AudioDetect extends AppCompatActivity
             starttime=currenttime=0;
             micstatus.setText("STARTING");
 
+
             //setting up audio manager
             audio = (AudioManager) getSystemService(AUDIO_SERVICE);
 
@@ -151,14 +168,15 @@ public class AudioDetect extends AppCompatActivity
         @Override
         protected String doInBackground(String... params)
         {
+            Log.d("AudioDetect.java","NIGGA" + percent);
             //Runs around making sure the amp is less then a hardcoded number
             //Users will input this later, but for now it's 1500.
-            while (amps < 1500)
+            while (amps < percent)
             {
-                //gets the amplitude and stores it in variable
+
                 amps = getAmplitude();
-                //because passive input is around 30
-                if (amps > 32)
+                //gets the amplitude and stores it in variable
+                if (amps > 35)
                 {
                     //having data may be useful at some point. I don't know when though.
                     count++;
@@ -207,13 +225,12 @@ public class AudioDetect extends AppCompatActivity
         void checktime()
         {
             currenttime=starttime=System.currentTimeMillis();
-
+            Log.d("Audiodetect","loop");
             //Loop to check if 15 sec has passed Gonna make this selectable from a list later
-            while(currenttime<starttime+5000)
+            while(currenttime<starttime+8000)
             {
                 //keeps checking until the 15 sec is over
                 currenttime=System.currentTimeMillis();
-                Log.d("AudioDetect.java", "LOOPING");
             }
             //raises volume back up after the time is done
             Log.d("AudioDetect.java", "Back to:  " + cur);
