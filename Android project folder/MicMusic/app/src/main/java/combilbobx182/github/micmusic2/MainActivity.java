@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -26,6 +27,21 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        DBManager db=new DBManager(getApplicationContext());
+
+        try
+        {
+            Log.d("MAINACTIVITY.JAVA","INSERT WORKED");
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(getApplicationContext(),"INSERT WORKED",duration);
+            toast.show();
+        }
+        catch (Exception ex)
+        {
+            Log.d("MAINACTIVITY.JAVA","FAILED INSERT");
+        }
+
 
         //will be used to go from the welcome screen to the mic recording screen later.
         final Button golisten = (Button) findViewById(R.id.btn1);

@@ -87,7 +87,6 @@ public class AudioDetect extends AppCompatActivity
             try
             {
                 mediarec.prepare();
-
             }
             catch (IOException e)
             {
@@ -168,7 +167,7 @@ public class AudioDetect extends AppCompatActivity
         @Override
         protected String doInBackground(String... params)
         {
-            Log.d("AudioDetect.java","NIGGA" + percent);
+            Log.d("AudioDetect.java"," "+percent);
             //Runs around making sure the amp is less then a hardcoded number
             //Users will input this later, but for now it's 1500.
             while (amps < percent)
