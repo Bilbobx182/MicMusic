@@ -3,6 +3,7 @@ package combilbobx182.github.micmusic2;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity
     boolean sensitivitywarning = true;
     String result="";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -29,13 +31,18 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         DBManager db=new DBManager(getApplicationContext());
-
         try
         {
-            Log.d("MAINACTIVITY.JAVA","INSERT WORKED");
-            int duration = Toast.LENGTH_LONG;
-            Toast toast = Toast.makeText(getApplicationContext(),"INSERT WORKED",duration);
-            toast.show();
+            db.open();
+            boolean res=db.dbtest(getApplicationContext(),"SensitivityListValues.db");
+            Log.d("Main",String.valueOf(res));
+            if(res == false)
+            {
+                for(int count=10; count<=100;count+=10)
+                {
+                    db.insertSensitivity(String.valueOf(count));
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -100,6 +107,7 @@ public class MainActivity extends AppCompatActivity
                 result=data.getStringExtra("result");
                 //because we no longer need to warn them to set the sensitivity.
                 sensitivitywarning=false;
+                Log.d("MAINACTIVITY","RESULT :"+result);
             }
             if (resultCode == Activity.RESULT_CANCELED)
             {
@@ -145,4 +153,5 @@ public class MainActivity extends AppCompatActivity
         AlertDialog alert11 = builder1.create();
         alert11.show();
     }
+
 }

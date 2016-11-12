@@ -11,7 +11,9 @@
         android:src="@drawable/loudicon"/>
 
     <TextView
-        android:id="@+id/loudlevel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/Sensitivity"
+        android:text="Sensitivity: "/>
+
 </LinearLayout>

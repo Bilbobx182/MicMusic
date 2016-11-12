@@ -5,3 +5,4 @@ V.0.0.4: Added sound listview.
 V.0.0.5: Added in returning values from the activity.
 V.0.0.6: Added passing variables between activities. Added pop up confirmation. Added action bar and icons. Removed buttons. Made listview selection actually do something.
 V.0.0.7: Added in database class. Added in the button to add contents to the sensitivity listview.Will try make it 1 thing later. Commiting this in case I need to roll back.
+V.0.0.8: Made the database class work. Removed the extra xml for button footer in the listview.
