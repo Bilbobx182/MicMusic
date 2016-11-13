@@ -12,11 +12,18 @@ import java.sql.SQLException;
 public class DBManager
 {
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "SensitivityListValues.db";
-    private static final String TABLE_SENSITIVITY = "Sensitivity";
+    private static final String DATABASE_NAME = "idgaf.db";
+
     private static final String KEY_ID = "_id";
     private static final String KEY_SENSITIVITY = "sensitivity";
+    private static final String TABLE_SENSITIVITY = "Sensitivity";
     private static final String CREATE_SENSITIVITY_TABLE = "CREATE TABLE " + TABLE_SENSITIVITY + "(_id INTEGER PRIMARY KEY autoincrement,sensitivity TEXT);";
+
+    private static final String KEY_STAT_ID = "_id";
+    private static final String KEY_STAT= "stat";
+    private static final String TABLE_STAT= "Stat";
+    private static final String CREATE_STAT_TABLE = "CREATE TABLE " + TABLE_STAT + "(_id INTEGER PRIMARY KEY autoincrement,stat TEXT);";
+
     private final Context context;
     private MyDatabaseHelper DBHelper;
     private SQLiteDatabase db;
@@ -27,14 +34,7 @@ public class DBManager
         this.context = ctx;
         DBHelper = new MyDatabaseHelper(context);
     }
-
-    //Used to test to see if a database exists for that dbname
-    public static boolean dbtest(Context context, String dbName)
-    {
-        File dbFile = context.getDatabasePath(dbName);
-        return dbFile.exists();
-    }
-
+    
     private static class MyDatabaseHelper extends SQLiteOpenHelper
     {
 
@@ -47,12 +47,34 @@ public class DBManager
         public void onCreate(SQLiteDatabase db)
         {
             db.execSQL(CREATE_SENSITIVITY_TABLE);
+            db.execSQL(CREATE_STAT_TABLE);
+
+            for(int count=10; count<=100;count+=10)
+            {
+                addSensitivity(db,String.valueOf(count));
+            }
+        }
+
+        public void addStat(SQLiteDatabase db, String key, String value)
+        {
+            ContentValues values = new ContentValues();
+            values.put(KEY_STAT_ID, key);
+            values.put(KEY_STAT, value);
+            db.insert(TABLE_STAT, null, values);
+        }
+
+        public void addSensitivity(SQLiteDatabase db, String value)
+        {
+            ContentValues initialValues = new ContentValues();
+            initialValues.put(KEY_SENSITIVITY,value);
+            db.insert(TABLE_SENSITIVITY, null, initialValues);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
         {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SENSITIVITY);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_STAT);
 
             onCreate(db);
         }

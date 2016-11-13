@@ -7,3 +7,4 @@ V.0.0.6: Added passing variables between activities. Added pop up confirmation. 
 V.0.0.7: Added in database class. Added in the button to add contents to the sensitivity listview.Will try make it 1 thing later. Commiting this in case I need to roll back.
 V.0.0.8: Made the database class work. Removed the extra xml for button footer in the listview.
 V.0.0.9: Added in uptime counter to the stats. Current amps is now displayed on the screen.
+V.0.1.0: Updated database code, improved interactions with the db.

@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".AudioDetect" />
         <activity android:name=".SensitivityListView" />
-        <activity android:name=".MicSensitivityListView"></activity>
+        <activity android:name=".MicSensitivityListView" />
+        <activity android:name=".VisualizerView"></activity>
     </application>
 
 </manifest>

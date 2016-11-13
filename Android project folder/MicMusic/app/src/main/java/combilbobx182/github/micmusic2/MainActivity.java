@@ -1,9 +1,11 @@
 package combilbobx182.github.micmusic2;
 
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
@@ -34,19 +37,18 @@ public class MainActivity extends AppCompatActivity
         //getting time the app was started.
         starttime=System.currentTimeMillis();
 
+
+        final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+        final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+        RelativeLayout ll = (RelativeLayout) findViewById(R.id.activity_main);
+        ll.setBackground(wallpaperDrawable);
+
+
+
         DBManager db=new DBManager(getApplicationContext());
         try
         {
             db.open();
-            boolean res=db.dbtest(getApplicationContext(),"SensitivityListValues.db");
-            Log.d("Main",String.valueOf(res));
-            if(res == false)
-            {
-                for(int count=10; count<=100;count+=10)
-                {
-                    db.insertSensitivity(String.valueOf(count));
-                }
-            }
         }
         catch (Exception ex)
         {
@@ -174,6 +176,19 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
         statsalert.show();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
     }
 
 
