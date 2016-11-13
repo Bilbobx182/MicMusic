@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity
 
     boolean sensitivitywarning = true;
     String result="";
+    Long starttime;
 
 
     @Override
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //getting time the app was started.
+        starttime=System.currentTimeMillis();
 
         DBManager db=new DBManager(getApplicationContext());
         try
@@ -74,6 +78,7 @@ public class MainActivity extends AppCompatActivity
                 listdisplay();
                 return true;
             case R.id.stats:
+                stats();
                 return true;
             case R.id.headset:
 
@@ -153,5 +158,23 @@ public class MainActivity extends AppCompatActivity
         AlertDialog alert11 = builder1.create();
         alert11.show();
     }
+
+    void stats()
+    {
+        AlertDialog.Builder statsalert = new AlertDialog.Builder(MainActivity.this);
+        statsalert.setMessage("Current uptime is: " + String.valueOf(( System.currentTimeMillis()-starttime ) /1000 ) + " seconds");
+        statsalert.setCancelable(true);
+
+        statsalert.setPositiveButton("OK",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        dialog.cancel();
+                    }
+                });
+        statsalert.show();
+    }
+
 
 }

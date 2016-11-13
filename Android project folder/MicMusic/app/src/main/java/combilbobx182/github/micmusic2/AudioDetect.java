@@ -126,7 +126,7 @@ public class AudioDetect extends AppCompatActivity
         }
     }
 
-    private class BackgroundThread extends AsyncTask<String, Integer, String>
+    private class BackgroundThread extends AsyncTask<String,String, String>
     {
         int count;
         double avg;
@@ -164,6 +164,7 @@ public class AudioDetect extends AppCompatActivity
         }
 
        //The main background thread.
+        double previous=0;
         @Override
         protected String doInBackground(String... params)
         {
@@ -183,6 +184,11 @@ public class AudioDetect extends AppCompatActivity
                     avg=sum/count;
                     //logs it to console so I can actually see what it is.
                     Log.d("AudioDetect.java", String.valueOf(amps) + "    avg:"+ String.valueOf(avg));
+                    if(amps>(previous + (amps/3)))
+                    {
+                        publishProgress();
+                    }
+                    previous=amps;
                 }
             }
             if(starttime == 0)
@@ -195,11 +201,11 @@ public class AudioDetect extends AppCompatActivity
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values)
+        protected void onProgressUpdate(String...values)
         {
             super.onProgressUpdate(values);
-            Log.e("PROGRESS UPDATE","Trying to enter onProgressUpdate");
-
+            Log.e("PROGRESS UPDATE","onProgressUpdate");
+            micstatus.setText(String.valueOf(amps) + " amps");
         }
         // This runs in UI when background thread finishes
         @Override
