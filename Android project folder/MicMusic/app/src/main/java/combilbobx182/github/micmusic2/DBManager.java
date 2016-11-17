@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 public class DBManager
 {
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "idgaf.db";
+    private static final String DATABASE_NAME = "TEST3.db";
 
     private static final String KEY_ID = "_id";
     private static final String KEY_SENSITIVITY = "sensitivity";
@@ -34,7 +35,7 @@ public class DBManager
         this.context = ctx;
         DBHelper = new MyDatabaseHelper(context);
     }
-    
+
     private static class MyDatabaseHelper extends SQLiteOpenHelper
     {
 
@@ -53,12 +54,12 @@ public class DBManager
             {
                 addSensitivity(db,String.valueOf(count));
             }
+            addStat(db,"0");
         }
 
-        public void addStat(SQLiteDatabase db, String key, String value)
+        public void addStat(SQLiteDatabase db,String value)
         {
             ContentValues values = new ContentValues();
-            values.put(KEY_STAT_ID, key);
             values.put(KEY_STAT, value);
             db.insert(TABLE_STAT, null, values);
         }
@@ -91,16 +92,27 @@ public class DBManager
         DBHelper.close();
     }
 
-    public long insertSensitivity(String value)
+    public void insertStat(String value)
     {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(KEY_SENSITIVITY,value);
-        return db.insert(TABLE_SENSITIVITY, null, initialValues);
+        Log.d("DBM","UPDATE "+ TABLE_STAT +" SET " + KEY_STAT + " = "+value + ";");
+        db.execSQL("UPDATE "+ TABLE_STAT +" SET " + KEY_STAT + " = "+value + ";");
     }
 
     public Cursor getAll()
     {
         Cursor mCursor = db.rawQuery("SELECT * FROM "+TABLE_SENSITIVITY, null);
+
+        if (mCursor != null)
+        {
+            mCursor.moveToFirst();
+        }
+
+        return mCursor;
+    }
+
+    public Cursor getStat()
+    {
+        Cursor mCursor = db.rawQuery("SELECT * FROM "+TABLE_STAT, null);
 
         if (mCursor != null)
         {

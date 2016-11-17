@@ -5,6 +5,7 @@ import android.app.WallpaperManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     boolean sensitivitywarning = true;
     String result="";
     Long starttime;
+    DBManager db;
 
 
     @Override
@@ -43,9 +45,7 @@ public class MainActivity extends AppCompatActivity
         RelativeLayout ll = (RelativeLayout) findViewById(R.id.activity_main);
         ll.setBackground(wallpaperDrawable);
 
-
-
-        DBManager db=new DBManager(getApplicationContext());
+        db=new DBManager(getApplicationContext());
         try
         {
             db.open();
@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity
         {
             Log.d("MAINACTIVITY.JAVA","FAILED INSERT");
         }
-
-
         //will be used to go from the welcome screen to the mic recording screen later.
         final Button golisten = (Button) findViewById(R.id.btn1);
         golisten.setOnClickListener(new View.OnClickListener()
@@ -66,6 +64,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+
+
+
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause()
     {
         super.onPause();
+        timeupdate();
 
     }
 
@@ -189,7 +192,22 @@ public class MainActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
+        timeupdate();
+        Cursor result = db.getStat();
+        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(result));
     }
 
 
+    public void timeupdate()
+    {
+        try
+        {
+            db.insertStat(String.valueOf(( System.currentTimeMillis()-starttime ) /1000 ) );
+            Log.d("MainActivity","inserted the time lol");
+        }
+        catch (Exception ex)
+        {
+            Log.d("MainActivity","Something bad happened while inserting");
+        }
+    }
 }

@@ -9,7 +9,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +31,7 @@ public class SensitivityListView extends ListActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensitivity_list_view);
-        final Button btn = (Button) findViewById(R.id.button);
+        final Button btn = (Button) findViewById(R.id.valueadder);
 
         ListView listView;
         listView = (ListView) findViewById(android.R.id.list);
@@ -51,15 +53,16 @@ public class SensitivityListView extends ListActivity
             toast.show();
         }
 
-        /* Commented out because I don't have a button with the db listview
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        /* Commented out because I don't have a button with the db listview */
+        final AlertDialog.Builder alert = new AlertDialog.Builder(new ContextThemeWrapper(SensitivityListView.this,R.style.AppTheme));
         btn.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                final EditText edittext = new EditText(getApplicationContext());
-                alert.setMessage("Enter Your Message");
-                alert.setTitle("Enter Your Title");
+                final EditText edittext = new EditText(SensitivityListView.this);
+                edittext.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+                alert.setMessage("Enter your sensitivity");
+                alert.setTitle("Choose a value between 10 - 100");
 
                 alert.setView(edittext);
 
@@ -78,7 +81,7 @@ public class SensitivityListView extends ListActivity
                 alert.show();
             }
         });
- */
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             public void onItemClick(AdapterView<?> av, View view, int position, long arg)
