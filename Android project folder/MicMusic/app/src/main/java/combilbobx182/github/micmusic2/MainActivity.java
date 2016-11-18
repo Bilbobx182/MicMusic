@@ -113,10 +113,23 @@ public class MainActivity extends AppCompatActivity
         {
             if(resultCode == Activity.RESULT_OK)
             {
+
                 result=data.getStringExtra("result");
-                //because we no longer need to warn them to set the sensitivity.
-                sensitivitywarning=false;
-                Log.d("MAINACTIVITY","RESULT :"+result);
+
+                String vti =data.getStringExtra("vti");
+
+                //because we no longer need to warn them to set the sensitivity if result is set.
+                if(result != null)
+                {
+                    sensitivitywarning=false;
+                    Log.d("MAINACTIVITY","RESULT :"+result);
+                }
+
+                if(vti != null)
+                {
+                    db.insertSensitivity(vti);
+                    Log.d("MAINACTIVITY","vti :"+vti);
+                }
             }
             if (resultCode == Activity.RESULT_CANCELED)
             {

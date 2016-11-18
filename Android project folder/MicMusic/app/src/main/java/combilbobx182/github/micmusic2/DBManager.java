@@ -98,6 +98,13 @@ public class DBManager
         db.execSQL("UPDATE "+ TABLE_STAT +" SET " + KEY_STAT + " = "+value + ";");
     }
 
+    public void insertSensitivity(String value)
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(KEY_SENSITIVITY,value);
+        db.insert(TABLE_SENSITIVITY, null, initialValues);
+    }
+
     public Cursor getAll()
     {
         Cursor mCursor = db.rawQuery("SELECT * FROM "+TABLE_SENSITIVITY, null);
@@ -120,6 +127,11 @@ public class DBManager
         }
 
         return mCursor;
+    }
+
+    public boolean deleteSen(String name)
+    {
+        return db.delete(TABLE_SENSITIVITY,KEY_SENSITIVITY + "=" + name, null) > 0;
     }
 
 }

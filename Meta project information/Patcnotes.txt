@@ -9,3 +9,4 @@ V.0.0.8: Made the database class work. Removed the extra xml for button footer i
 V.0.0.9: Added in uptime counter to the stats. Current amps is now displayed on the screen.
 V.0.1.0: Updated database code, improved interactions with the db.
 V.0.1.1: Updated it so the pop up box is number.
+V.0.1.2: Functionality improved in the Sensitivity List View. It automatically refreshes itself now. Deletion of items now possible too.

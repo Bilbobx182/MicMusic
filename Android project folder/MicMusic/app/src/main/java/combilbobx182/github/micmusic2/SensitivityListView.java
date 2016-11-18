@@ -53,7 +53,6 @@ public class SensitivityListView extends ListActivity
             toast.show();
         }
 
-        /* Commented out because I don't have a button with the db listview */
         final AlertDialog.Builder alert = new AlertDialog.Builder(new ContextThemeWrapper(SensitivityListView.this,R.style.AppTheme));
         btn.setOnClickListener(new View.OnClickListener()
         {
@@ -69,7 +68,18 @@ public class SensitivityListView extends ListActivity
                 alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //What ever you want to do with the value
-                        String YouEditTextValue = edittext.getText().toString();
+                        String selection = edittext.getText().toString();
+                        try
+                        {
+                            db.open();
+                            db.insertSensitivity(selection);
+                            Toast.makeText(SensitivityListView.this, "Value: " + selection + " was inserted.", Toast.LENGTH_LONG).show();
+                            refresh();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.d("SensitvityLV","OPEN FAILED");
+                        }
                     }
                 });
 
@@ -88,13 +98,13 @@ public class SensitivityListView extends ListActivity
             {
                 Cursor mycursor = (Cursor) av.getItemAtPosition(position);
                 //Gets the location of the row that was selected and stores in selection.
-                String selection = mycursor.getString(0);
+                String selection = mycursor.getString(1);
                 /*
                 converts the value selected in the ordered sensitivity list 0-10
                 Multiplies it by 10 so we have it on a scale of 10-100
                 Then converts it back to a string so it can be passed around easier.
                  */
-                String res=String.valueOf((10 * (Integer.parseInt(selection))));
+                String res=String.valueOf(((Integer.parseInt(selection))));
 
                 //Used to return it to the main Activity that acts as a controller.
                 Intent returnIntent = new Intent();
@@ -105,6 +115,64 @@ public class SensitivityListView extends ListActivity
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> av2, View arg1,int pos, long id)
+            {
+                Cursor mycursor = (Cursor) av2.getItemAtPosition(pos);
+                String selection = mycursor.getString(1);
+                String res=String.valueOf(((Integer.parseInt(selection))));
+                Log.d("SLV",res);
+                deleteItem(res);
+                return true;
+            }
+        });
+    }
 
+    void deleteItem(String item)
+    {
+        android.support.v7.app.AlertDialog.Builder builder1 = new android.support.v7.app.AlertDialog.Builder(this);
+        final String valuetodelete=item;
+        builder1.setMessage("Do you really want to delete value: " + valuetodelete);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        DBManager db=new DBManager(getApplicationContext());
+                        try
+                        {
+                            db.open();
+                            db.deleteSen(valuetodelete);
+                            Toast.makeText(SensitivityListView.this, "Value: " + valuetodelete + " was deleted.", Toast.LENGTH_LONG).show();
+                            refresh();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.d("SensitvityLV","OPEN FAILED");
+                        }
+                    }
+                });
+
+        builder1.setNegativeButton("No",
+                new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface dialog, int id)
+                    {
+                        dialog.cancel();
+                    }
+                });
+
+        android.support.v7.app.AlertDialog alert11 = builder1.create();
+        alert11.show();
+    }
+
+    private void refresh()
+    {
+        SensitivityListView.this.finish();
+        Intent refresh=new Intent(this,SensitivityListView.class);
+        startActivity(refresh);
     }
 }
