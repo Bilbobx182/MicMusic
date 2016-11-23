@@ -1,5 +1,13 @@
-package combilbobx182.github.micmusic2;
 
+
+/*
+Written by: Ciarán O Nualláin - C14474048
+Purpose: This will act as the home screen for the app. All other screens will be activated through this one.
+Updated: 23rd November 2016
+ */
+
+
+package combilbobx182.github.micmusic2;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.DialogInterface;
@@ -7,9 +15,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -17,12 +25,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
 
-    boolean sensitivitywarning = true;
+    boolean sensitivityWarning = true;
     String result="";
     Long starttime;
     DBManager db;
@@ -33,12 +40,11 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar topMenuBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(topMenuBar);
 
         //getting time the app was started.
         starttime=System.currentTimeMillis();
-
 
         final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
         final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
@@ -52,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         }
         catch (Exception ex)
         {
-            Log.d("MAINACTIVITY.JAVA","FAILED INSERT");
+            Log.d("MAINACTIVITY.JAVA","Failed to open db");
         }
         //will be used to go from the welcome screen to the mic recording screen later.
         final Button golisten = (Button) findViewById(R.id.btn1);
@@ -60,13 +66,10 @@ public class MainActivity extends AppCompatActivity
         {
             public void onClick(View v)
             {
-                audcall();
+                beginListeningClass();
             }
         });
     }
-
-
-
 
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId())
         {
             case R.id.mic:
-                listdisplay();
+                listDisplay();
                 return true;
             case R.id.stats:
                 stats();
@@ -92,9 +95,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void audcall()
+    public void beginListeningClass()
     {
-        if(sensitivitywarning==true)
+        if(sensitivityWarning ==true)
         {
             warning();
         }
@@ -113,22 +116,12 @@ public class MainActivity extends AppCompatActivity
         {
             if(resultCode == Activity.RESULT_OK)
             {
-
                 result=data.getStringExtra("result");
-
-                String vti =data.getStringExtra("vti");
-
                 //because we no longer need to warn them to set the sensitivity if result is set.
                 if(result != null)
                 {
-                    sensitivitywarning=false;
+                    sensitivityWarning =false;
                     Log.d("MAINACTIVITY","RESULT :"+result);
-                }
-
-                if(vti != null)
-                {
-                    db.insertSensitivity(vti);
-                    Log.d("MAINACTIVITY","vti :"+vti);
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED)
@@ -138,7 +131,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void listdisplay()
+    public void listDisplay()
     {
         Log.d("MainActivity","I WAS CLICKED");
         Intent ld = new Intent(this, SensitivityListView.class);
@@ -198,6 +191,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onPause();
         timeupdate();
+        db.close();
 
     }
 
@@ -205,9 +199,17 @@ public class MainActivity extends AppCompatActivity
     public void onResume()
     {
         super.onResume();
-        timeupdate();
-        Cursor result = db.getStat();
-        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(result));
+        try
+        {
+            db.open();
+            timeupdate();
+            Cursor result = db.getStat();
+            Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(result));
+        }
+        catch (Exception ex)
+        {
+            Log.d("MAINACTIVITY.JAVA","Failed to open db");
+        }
     }
 
 

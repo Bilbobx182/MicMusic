@@ -1,5 +1,12 @@
-package combilbobx182.github.micmusic2;
 
+
+/*
+Written by: Ciarán O Nualláin - C14474048
+Purpose: Class to deal with the audio Screen, sub class to deal with audio input processing.
+Updated: 23rd November 2016
+ */
+
+package combilbobx182.github.micmusic2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,7 +28,7 @@ public class AudioDetect extends AppCompatActivity
     protected double amps=0;
     double sum =0;
     protected MediaRecorder mediarec = null;
-    int MAX_AMP=32767;
+    final int MAX_AMP=32767;
     float percent=0;
 
 
@@ -31,22 +38,19 @@ public class AudioDetect extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_detect);
         micstatus = (TextView) findViewById(R.id.micstat);
-        boolean mictest = mictest(getApplicationContext());
-        //testing to see if the android device has a microphone.
+        boolean micTest = mictest(getApplicationContext());
 
-        Intent myIntent = getIntent(); // gets the previously created intent
-        String firstKeyName = myIntent.getStringExtra("sensitivity");
-        Log.d("AUDIO",firstKeyName + "VALUE PASSED IN");
-        Log.d("AudioDetect.java 1)",firstKeyName);
-        Log.d("AudioDetect.java 2)", String.valueOf(firstKeyName) + "/" + String.valueOf(100) + " * " + String.valueOf(32767));
-        percent=Integer.valueOf(firstKeyName);
-        Log.d("AudioDetect.java","PERCENT1"+percent);
 
+        Intent intentFromMain = getIntent();
+        String senisitivityKey = intentFromMain.getStringExtra("sensitivity");
+
+        percent=Integer.valueOf(senisitivityKey);
+
+        //calculating what the value passed in is in percent of overall volume.
         percent=((percent/100) * MAX_AMP);
-        Log.d("AudioDetect.java",""+percent);
 
 
-        if (mictest == true)
+        if (micTest == true)
         {
             micstatus.setText("IT FOUND A MIC");
             //Creates a new instance of the BackgroundThread class which is used as an ASYNC class.
@@ -62,7 +66,7 @@ public class AudioDetect extends AppCompatActivity
         {
             public void onClick(View v)
             {
-                Toast.makeText(AudioDetect.this, "HELLO i work", Toast.LENGTH_LONG).show();
+                Toast.makeText(AudioDetect.this, "I'M HELPING", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -128,31 +132,23 @@ public class AudioDetect extends AppCompatActivity
 
     private class BackgroundThread extends AsyncTask<String,String, String>
     {
-        int count;
-        double avg;
+        int totalAmpCalls;
+        double avg, previous;
         long starttime,currenttime;
         int cur, max,half;
         AudioManager audio;
 
         void varsetup()
         {
-            avg=count=0;
+            previous=avg= totalAmpCalls =0;
             starttime=currenttime=0;
             micstatus.setText("STARTING");
-
-
             //setting up audio manager
             audio = (AudioManager) getSystemService(AUDIO_SERVICE);
-
             //getting the values of the system volume.
             cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             half=Math.round (cur/2);
             max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-
-            //printing it out to make sure it worked. Can be removed later.
-            Log.d("MainActivity.java","MAX"+ String.valueOf(max));
-            Log.d("MainActivity.java","CUR"+ String.valueOf(cur));
-            Log.d("MainActivity.java","HALF VOL"+ String.valueOf(half));
         }
 
         @Override
@@ -163,25 +159,22 @@ public class AudioDetect extends AppCompatActivity
             super.onPreExecute();
         }
 
-       //The main background thread.
-        double previous=0;
         @Override
         protected String doInBackground(String... params)
         {
-            Log.d("AudioDetect.java"," "+percent);
             //Runs around making sure the amp is less then a hardcoded number
             //Users will input this later, but for now it's 1500.
             while (amps < percent)
             {
-
                 amps = getAmplitude();
                 //gets the amplitude and stores it in variable
                 if (amps > 35)
                 {
                     //having data may be useful at some point. I don't know when though.
-                    count++;
+                    totalAmpCalls++;
                     sum =(sum +amps);
-                    avg=sum/count;
+                    avg=sum/ totalAmpCalls;
+
                     //logs it to console so I can actually see what it is.
                     Log.d("AudioDetect.java", String.valueOf(amps) + "    avg:"+ String.valueOf(avg));
                     if(amps>(previous + (amps/3)))
@@ -191,12 +184,9 @@ public class AudioDetect extends AppCompatActivity
                     previous=amps;
                 }
             }
-            if(starttime == 0)
-            {
-                volumedown();
-                checktime();
-            }
-            //This gets passed to post execute
+            //turns the volume down, then loops checking to see if time is up
+            volumeDown();
+            checkTime();
             return "DONE";
         }
 
@@ -218,19 +208,18 @@ public class AudioDetect extends AppCompatActivity
             // Do things like hide the progress bar or change a TextView
         }
 
-        void volumedown()
+        void volumeDown()
         {
-            Log.d("AudioDetect.java", "Current:  " + cur);
             cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             half=Math.round (cur/2);
             audio.setStreamVolume(AudioManager.STREAM_MUSIC, half, 0);
             Log.d("AudioDetect.java", "Volume DOWN TO:  " + half);
         }
 
-        void checktime()
+        void checkTime()
         {
             currenttime=starttime=System.currentTimeMillis();
-            Log.d("Audiodetect","loop");
+
             //Loop to check if 15 sec has passed Gonna make this selectable from a list later
             while(currenttime<starttime+8000)
             {
@@ -238,8 +227,23 @@ public class AudioDetect extends AppCompatActivity
                 currenttime=System.currentTimeMillis();
             }
             //raises volume back up after the time is done
-            Log.d("AudioDetect.java", "Back to:  " + cur);
             audio.setStreamVolume(AudioManager.STREAM_MUSIC,cur, 0);
         }
     }
 }
+
+/*
+Useful comments and logs for testing:
+       //Log.d("AUDIO",senisitivityKey + "VALUE PASSED IN");
+
+        Log.d("AudioDetect.java 1)",senisitivityKey);
+        Log.d("AudioDetect.java 2)", String.valueOf(senisitivityKey) + "/" + String.valueOf(100) + " * " + String.valueOf(32767));
+
+        Log.d("AudioDetect.java",""+percent);
+
+          Log.d("MainActivity.java","MAX"+ String.valueOf(max));
+            Log.d("MainActivity.java","CUR"+ String.valueOf(cur));
+            Log.d("MainActivity.java","HALF VOL"+ String.valueOf(half));
+
+
+*/
