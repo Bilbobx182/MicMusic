@@ -1,5 +1,12 @@
-package combilbobx182.github.micmusic2;
 
+
+/**
+Written by: Ciarán O Nualláin - C14474048
+Purpose: Act as the list view for the sensitivity screen.
+Updated: 23rd November 2016
+ */
+
+package combilbobx182.github.micmusic2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -20,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
 public class SensitivityListView extends ListActivity
 {
     DBManager db = new DBManager(this);
@@ -33,8 +39,8 @@ public class SensitivityListView extends ListActivity
         setContentView(R.layout.activity_sensitivity_list_view);
         final Button btn = (Button) findViewById(R.id.valueadder);
 
-        ListView listView;
-        listView = (ListView) findViewById(android.R.id.list);
+        ListView sensitivityList;
+        sensitivityList = (ListView) findViewById(android.R.id.list);
 
         try
         {
@@ -44,7 +50,7 @@ public class SensitivityListView extends ListActivity
             Cursor result = db.getAll();
             //Goes to the cursor adapter.
             MyCursorAdapter cursorAdapter = new MyCursorAdapter(SensitivityListView.this, result);
-            listView.setAdapter(cursorAdapter);
+            sensitivityList.setAdapter(cursorAdapter);
             db.close();
         }
         catch (Exception ex)
@@ -53,7 +59,12 @@ public class SensitivityListView extends ListActivity
             toast.show();
         }
 
+        /*
+        Reference: Following code from:
+        https://blog.andromo.com/2011/fixing-text-colours-on-an-alertdialog-when-using-theme-light/
+         */
         final AlertDialog.Builder alert = new AlertDialog.Builder(new ContextThemeWrapper(SensitivityListView.this,R.style.AppTheme));
+        //Reference complete.
         btn.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
@@ -92,7 +103,7 @@ public class SensitivityListView extends ListActivity
             }
         });
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        sensitivityList.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             public void onItemClick(AdapterView<?> av, View view, int position, long arg)
             {
@@ -115,7 +126,7 @@ public class SensitivityListView extends ListActivity
             }
         });
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        sensitivityList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
         {
             @Override
             public boolean onItemLongClick(AdapterView<?> av2, View arg1,int pos, long id)

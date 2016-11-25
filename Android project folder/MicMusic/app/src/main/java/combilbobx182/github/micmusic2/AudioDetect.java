@@ -1,6 +1,6 @@
 
 
-/*
+/**
 Written by: Ciarán O Nualláin - C14474048
 Purpose: Class to deal with the audio Screen, sub class to deal with audio input processing.
 Updated: 23rd November 2016

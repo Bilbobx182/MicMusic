@@ -1,6 +1,6 @@
 
 
-/*
+/**
 Written by: Ciarán O Nualláin - C14474048
 Purpose: This will act as the home screen for the app. All other screens will be activated through this one.
 Updated: 23rd November 2016
@@ -18,18 +18,22 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity
 {
 
-    boolean sensitivityWarning = true;
+    private boolean sensitivityWarning = true;
+    private int volumeSelection;
     String result="";
     Long starttime;
     DBManager db;
@@ -84,12 +88,16 @@ public class MainActivity extends AppCompatActivity
             case R.id.mic:
                 listDisplay();
                 return true;
+
+            case R.id.headset:
+                Log.d("MainActivity","HEADSET VOLUME");
+                setVolumeLowering();
+                return true;
+
             case R.id.stats:
                 stats();
                 return true;
-            case R.id.headset:
 
-                return true;
             default:
                 return true;
         }
@@ -140,11 +148,13 @@ public class MainActivity extends AppCompatActivity
 
     void warning()
     {
-        AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
-        builder1.setMessage("You didn't select a sensitivity, go by default?");
-        builder1.setCancelable(true);
+        // Learned how to do an alertDialog initially from.
+        // http://stackoverflow.com/questions/26097513/android-simple-alert-dialog
+        AlertDialog.Builder popupWarning = new AlertDialog.Builder(MainActivity.this);
+        popupWarning.setMessage("You didn't select a sensitivity, go by default?");
+        popupWarning.setCancelable(true);
 
-        builder1.setPositiveButton("Yes",
+        popupWarning.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id)
@@ -156,7 +166,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
-        builder1.setNegativeButton("No",
+        popupWarning.setNegativeButton("No",
                 new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id)
@@ -165,17 +175,17 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
 
-        AlertDialog alert11 = builder1.create();
+        AlertDialog alert11 = popupWarning.create();
         alert11.show();
     }
 
     void stats()
     {
-        AlertDialog.Builder statsalert = new AlertDialog.Builder(MainActivity.this);
-        statsalert.setMessage("Current uptime is: " + String.valueOf(( System.currentTimeMillis()-starttime ) /1000 ) + " seconds");
-        statsalert.setCancelable(true);
+        AlertDialog.Builder statsAlert = new AlertDialog.Builder(MainActivity.this);
+        statsAlert.setMessage("Current uptime is: " + String.valueOf(( System.currentTimeMillis()-starttime ) /1000 ) + " seconds");
+        statsAlert.setCancelable(true);
 
-        statsalert.setPositiveButton("OK",
+        statsAlert.setPositiveButton("OK",
                 new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id)
@@ -183,7 +193,7 @@ public class MainActivity extends AppCompatActivity
                         dialog.cancel();
                     }
                 });
-        statsalert.show();
+        statsAlert.show();
     }
 
     @Override
@@ -192,7 +202,6 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         timeupdate();
         db.close();
-
     }
 
     @Override
@@ -212,7 +221,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     public void timeupdate()
     {
         try
@@ -224,5 +232,47 @@ public class MainActivity extends AppCompatActivity
         {
             Log.d("MainActivity","Something bad happened while inserting");
         }
+    }
+
+
+
+    void setVolumeLowering()
+    {
+        final android.app.AlertDialog.Builder alert=new android.app.AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this,R.style.AppTheme));
+        final EditText edittext = new EditText(MainActivity.this);
+        edittext.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+        alert.setMessage("% it will lower music by");
+        alert.setCancelable(true);
+        alert.setTitle("Choose a value between 0 - 100");
+        alert.setView(edittext);
+
+        alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                String selection = edittext.getText().toString();
+                volumeSelection = Integer.valueOf(selection);
+                //Test if it's 0 or not, if it's above 0 that means it's out of range.
+                if (volumeSelection < 100)
+                {
+                    System.out.println(volumeSelection);
+                    Log.d("MainActivity",String.valueOf(volumeSelection));
+                }
+                else
+                {
+                    setVolumeLowering();
+                }
+            }
+        });
+
+        alert.setNegativeButton("No Option", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                // what ever you want to do with No option.
+            }
+        });
+
+        alert.show();
     }
 }
