@@ -133,8 +133,9 @@ public class SensitivityListView extends ListActivity
             {
                 Cursor mycursor = (Cursor) av2.getItemAtPosition(pos);
                 String selection = mycursor.getString(1);
-                Log.d("SELECTED",selection);
-                deleteItem(selection);
+                String res=String.valueOf(((Integer.parseInt(selection))));
+                Log.d("SLV",res);
+                deleteItem(res);
                 return true;
             }
         });

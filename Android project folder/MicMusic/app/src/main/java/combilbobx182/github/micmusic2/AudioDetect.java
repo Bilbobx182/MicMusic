@@ -29,8 +29,8 @@ public class AudioDetect extends AppCompatActivity
     double sum =0;
     protected MediaRecorder mediarec = null;
     final int MAX_AMP=32767;
-    float micSensitivity =0;
-    float lowerByPercent;
+    float percent=0;
+    boolean loop=true;
 
 
     @Override
@@ -41,13 +41,14 @@ public class AudioDetect extends AppCompatActivity
         micstatus = (TextView) findViewById(R.id.micstat);
         boolean micTest = mictest(getApplicationContext());
 
-        Intent intentFromMain = getIntent();
-        micSensitivity =Integer.valueOf(intentFromMain.getStringExtra("sensitivity"));
-        lowerByPercent= Integer.valueOf((intentFromMain.getStringExtra("volumeDown")));
-        Log.d("AD START",String.valueOf(lowerByPercent));
 
-        //calculating what the value passed in is in micSensitivity of overall volume.
-        micSensitivity =((micSensitivity /100) * MAX_AMP);
+        Intent intentFromMain = getIntent();
+        String senisitivityKey = intentFromMain.getStringExtra("sensitivity");
+
+        percent=Integer.valueOf(senisitivityKey);
+
+        //calculating what the value passed in is in percent of overall volume.
+        percent=((percent/100) * MAX_AMP);
 
 
         if (micTest == true)
@@ -61,12 +62,12 @@ public class AudioDetect extends AppCompatActivity
             micstatus.setText("NO MIC");
         }
         //This won't be in production code. It is simply used to see IF the ASYNC class is working and that I can do stuff on the UI thread.
-        final Button golisten = (Button) findViewById(R.id.BackBtn);
+        final Button golisten = (Button) findViewById(R.id.loopBtn);
         golisten.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                Toast.makeText(AudioDetect.this, "I'M HELPING", Toast.LENGTH_LONG).show();
+                loop=false;
             }
         });
     }
@@ -130,22 +131,12 @@ public class AudioDetect extends AppCompatActivity
         }
     }
 
-     private float map(float value, float oldstart, float oldstop, float newstart, float newend)
-    {
-        float irange = oldstop-oldstart;
-        float dis = value-oldstart;
-        float percente = dis / irange;
-        float outRange = newend-newstart;
-
-        return newstart+(percente*outRange);
-    }
-
     private class BackgroundThread extends AsyncTask<String,String, String>
     {
         int totalAmpCalls;
         double avg, previous;
         long starttime,currenttime;
-        int cur, max;
+        int cur, max,half;
         AudioManager audio;
 
         void varsetup()
@@ -157,11 +148,8 @@ public class AudioDetect extends AppCompatActivity
             audio = (AudioManager) getSystemService(AUDIO_SERVICE);
             //getting the values of the system volume.
             cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            half=Math.round (cur/2);
             max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            Log.d("AD",String.valueOf(lowerByPercent) + "0,100,0 "+String.valueOf(cur));
-            lowerByPercent=(map(lowerByPercent,0,100,0,cur));
-            Log.d("hi",String.valueOf(lowerByPercent));
-
         }
 
         @Override
@@ -177,7 +165,7 @@ public class AudioDetect extends AppCompatActivity
         {
             //Runs around making sure the amp is less then a hardcoded number
             //Users will input this later, but for now it's 1500.
-            while (amps < micSensitivity)
+            while ((amps < percent) || loop==true)
             {
                 amps = getAmplitude();
                 //gets the amplitude and stores it in variable
@@ -196,10 +184,15 @@ public class AudioDetect extends AppCompatActivity
                     }
                     previous=amps;
                 }
+
+                if(amps>=percent)
+                {
+                    volumeDown();
+                    checkTime();
+                }
             }
             //turns the volume down, then loops checking to see if time is up
-            volumeDown();
-            checkTime();
+
             return "DONE";
         }
 
@@ -223,21 +216,18 @@ public class AudioDetect extends AppCompatActivity
 
         void volumeDown()
         {
-            Log.d("MainActivity.java","CUR"+ String.valueOf(cur));
-            Log.d("AD",String.valueOf(cur-lowerByPercent));
-            int temp = Math.round(cur-lowerByPercent);
-            Log.d("AD TEMP VALUE",String.valueOf(temp));
             cur = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-            audio.setStreamVolume(AudioManager.STREAM_MUSIC,temp, 0);
-            Log.d("AudioDetect.java", "Volume DOWN TO:  " +String.valueOf(cur-lowerByPercent));
-
+            half=Math.round (cur/2);
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, half, 0);
+            Log.d("AudioDetect.java", "Volume DOWN TO:  " + half);
         }
 
         void checkTime()
         {
             currenttime=starttime=System.currentTimeMillis();
+
             //Loop to check if 15 sec has passed Gonna make this selectable from a list later
-            while(currenttime<starttime+8000)
+            while(currenttime<starttime+4000)
             {
                 //keeps checking until the 15 sec is over
                 currenttime=System.currentTimeMillis();
@@ -255,7 +245,7 @@ Useful comments and logs for testing:
         Log.d("AudioDetect.java 1)",senisitivityKey);
         Log.d("AudioDetect.java 2)", String.valueOf(senisitivityKey) + "/" + String.valueOf(100) + " * " + String.valueOf(32767));
 
-        Log.d("AudioDetect.java",""+micSensitivity);
+        Log.d("AudioDetect.java",""+percent);
 
           Log.d("MainActivity.java","MAX"+ String.valueOf(max));
             Log.d("MainActivity.java","CUR"+ String.valueOf(cur));

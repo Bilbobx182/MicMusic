@@ -20,11 +20,11 @@
         android:id="@+id/micstat" />
 
     <Button
-        android:text="background test"
+        android:text="Click to loop once."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="114dp"
-        android:id="@+id/BackBtn" />
+        android:id="@+id/loopBtn" />
 </RelativeLayout>
