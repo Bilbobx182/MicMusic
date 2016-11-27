@@ -11,4 +11,5 @@ V.0.1.0: Updated database code, improved interactions with the db.
 V.0.1.1: Updated it so the pop up box is number.
 V.0.1.2: Functionality improved in the Sensitivity List View. It automatically refreshes itself now. Deletion of items now possible too.
 V.0.1.3: Refactored code to make it easier to understand in MainActivity and Audio class. Conformed to java standards.
-V.0.1.4: Added in volume down selection fundamentals.
+V.0.1.4: Fixed bug where it increased the volume instead of lowering it.
+V.0.1.5:

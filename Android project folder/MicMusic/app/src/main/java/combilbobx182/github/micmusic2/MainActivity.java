@@ -33,11 +33,10 @@ public class MainActivity extends AppCompatActivity
 {
 
     private boolean sensitivityWarning = true;
-    private int volumeSelection;
+    private int volumeSelection=50;
     String result="";
     Long starttime;
     DBManager db;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,20 +102,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void beginListeningClass()
-    {
-        if(sensitivityWarning ==true)
-        {
-            warning();
-        }
-        else
-        {
-            Intent ad = new Intent(this, AudioDetect.class);
-            ad.putExtra("sensitivity",result);
-            startActivity(ad);
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -139,14 +124,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void listDisplay()
+    private void beginListeningClass()
+    {
+        if(sensitivityWarning ==true)
+        {
+            warning();
+        }
+        else
+        {
+            beginAD(false);
+        }
+    }
+
+    private void listDisplay()
     {
         Log.d("MainActivity","I WAS CLICKED");
         Intent ld = new Intent(this, SensitivityListView.class);
         startActivityForResult(ld,1);
     }
 
-    void warning()
+    private void warning()
     {
         // Learned how to do an alertDialog initially from.
         // http://stackoverflow.com/questions/26097513/android-simple-alert-dialog
@@ -159,9 +156,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     public void onClick(DialogInterface dialog, int id)
                     {
-                        Intent ad = new Intent(MainActivity.this, AudioDetect.class);
-                        ad.putExtra("sensitivity","50");
-                        startActivity(ad);
+                        beginAD(true);
                         dialog.cancel();
                     }
                 });
@@ -179,7 +174,7 @@ public class MainActivity extends AppCompatActivity
         alert11.show();
     }
 
-    void stats()
+    private void stats()
     {
         AlertDialog.Builder statsAlert = new AlertDialog.Builder(MainActivity.this);
         statsAlert.setMessage("Current uptime is: " + String.valueOf(( System.currentTimeMillis()-starttime ) /1000 ) + " seconds");
@@ -194,6 +189,47 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
         statsAlert.show();
+    }
+
+    private void setVolumeLowering()
+    {
+        volumeSelection=0;
+        final android.app.AlertDialog.Builder alert=new android.app.AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this,R.style.AppTheme));
+        final EditText edittext = new EditText(MainActivity.this);
+        edittext.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+        alert.setMessage("% it will lower music by");
+        alert.setCancelable(true);
+        alert.setTitle("Choose a value between 0 - 100");
+        alert.setView(edittext);
+
+        alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                String selection = edittext.getText().toString();
+                volumeSelection = Integer.valueOf(selection);
+                //Test if it's 0 or not, if it's above 0 that means it's out of range.
+                if (volumeSelection < 100 && volumeSelection > 0)
+                {
+                    System.out.println(volumeSelection);
+                    Log.d("MainActivity",String.valueOf(volumeSelection));
+                }
+                else
+                {
+                    setVolumeLowering();
+                }
+            }
+        });
+
+        alert.setNegativeButton("No Option", new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                // what ever you want to do with No option.
+            }
+        });
+
+        alert.show();
     }
 
     @Override
@@ -234,45 +270,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
-    void setVolumeLowering()
+    private void beginAD(boolean useDefault)
     {
-        final android.app.AlertDialog.Builder alert=new android.app.AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this,R.style.AppTheme));
-        final EditText edittext = new EditText(MainActivity.this);
-        edittext.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
-        alert.setMessage("% it will lower music by");
-        alert.setCancelable(true);
-        alert.setTitle("Choose a value between 0 - 100");
-        alert.setView(edittext);
-
-        alert.setPositiveButton("Yes Option", new DialogInterface.OnClickListener()
+        if(useDefault==true)
         {
-            public void onClick(DialogInterface dialog, int whichButton)
-            {
-                String selection = edittext.getText().toString();
-                volumeSelection = Integer.valueOf(selection);
-                //Test if it's 0 or not, if it's above 0 that means it's out of range.
-                if (volumeSelection < 100)
-                {
-                    System.out.println(volumeSelection);
-                    Log.d("MainActivity",String.valueOf(volumeSelection));
-                }
-                else
-                {
-                    setVolumeLowering();
-                }
-            }
-        });
-
-        alert.setNegativeButton("No Option", new DialogInterface.OnClickListener()
+//extras.putString
+            Intent ad = new Intent(MainActivity.this, AudioDetect.class);
+            ad.putExtra("sensitivity","50");
+            ad.putExtra("volumeDown",String.valueOf(volumeSelection));
+            Log.d("MainActivity","50 + "+String.valueOf(volumeSelection));
+            startActivity(ad);
+        }
+        else
         {
-            public void onClick(DialogInterface dialog, int whichButton)
-            {
-                // what ever you want to do with No option.
-            }
-        });
-
-        alert.show();
+            Intent ad = new Intent(this, AudioDetect.class);
+            ad.putExtra("sensitivity",String.valueOf(result));
+            ad.putExtra("volumeDown",String.valueOf(volumeSelection));
+            Log.d("MainActivity",result+ " " + String.valueOf(volumeSelection));
+            startActivity(ad);
+        }
     }
 }
