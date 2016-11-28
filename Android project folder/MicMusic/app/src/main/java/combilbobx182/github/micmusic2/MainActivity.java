@@ -50,10 +50,15 @@ public class MainActivity extends AppCompatActivity
         //getting time the app was started.
         starttime=System.currentTimeMillis();
 
+        /*
+        REFERENCE: Following code is from:
+        http://stackoverflow.com/questions/24971524/set-app-background-to-be-the-same-as-home-screen-wallpaper
+         */
         final WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
         final Drawable wallpaperDrawable = wallpaperManager.getDrawable();
         RelativeLayout ll = (RelativeLayout) findViewById(R.id.activity_main);
         ll.setBackground(wallpaperDrawable);
+        //end refrence
 
         db=new DBManager(getApplicationContext());
         try
@@ -120,6 +125,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        //REFERENCE: Figured out how to return contents activities using this
+        // http://stackoverflow.com/questions/920306/sending-data-back-to-the-main-activity-in-android
         if (requestCode == 1)
         {
             if(resultCode == Activity.RESULT_OK)
@@ -148,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 
     void warning()
     {
-        // Learned how to do an alertDialog initially from.
+        // REFERENCE: Learned how to do an alertDialog initially from.
         // http://stackoverflow.com/questions/26097513/android-simple-alert-dialog
         AlertDialog.Builder popupWarning = new AlertDialog.Builder(MainActivity.this);
         popupWarning.setMessage("You didn't select a sensitivity, go by default?");
@@ -238,7 +245,13 @@ public class MainActivity extends AppCompatActivity
 
     void setVolumeLowering()
     {
+        //REFERENCE: Fixed the colouring with the help from here
+        //https://blog.andromo.com/2011/fixing-text-colours-on-an-alertdialog-when-using-theme-light/
         final android.app.AlertDialog.Builder alert=new android.app.AlertDialog.Builder(new ContextThemeWrapper(MainActivity.this,R.style.AppTheme));
+        //End Reference
+
+        //Reference: Figured out how to do editext alert boxes from here.
+        //http://stackoverflow.com/questions/18799216/how-to-make-a-edittext-box-in-a-dialog
         final EditText edittext = new EditText(MainActivity.this);
         edittext.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
         alert.setMessage("% it will lower music by");

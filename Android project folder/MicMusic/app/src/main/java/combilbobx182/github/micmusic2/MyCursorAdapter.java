@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+//Reference:
+// based on answer in http://stackoverflow.com/questions/5457699/cursor-adapter-and-sqlite-example
 public class MyCursorAdapter extends CursorAdapter
 {
     public MyCursorAdapter(Context context, Cursor cursor)
@@ -28,6 +30,7 @@ public class MyCursorAdapter extends CursorAdapter
     {
         return LayoutInflater.from(context).inflate(R.layout.row, parent, false);
     }
+
     @Override
     public void bindView(View view, Context context, Cursor cursor)
     {

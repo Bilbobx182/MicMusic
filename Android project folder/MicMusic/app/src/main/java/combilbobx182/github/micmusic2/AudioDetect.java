@@ -72,6 +72,16 @@ public class AudioDetect extends AppCompatActivity
         });
     }
 
+    //hack to disable the back button being pressed to avoid bugs.
+    @Override
+    public void onBackPressed()
+    {
+        if(loop==false)
+        {
+            finish();
+        }
+    }
+
     public static boolean mictest(Context context)
     {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
@@ -83,6 +93,10 @@ public class AudioDetect extends AppCompatActivity
         if (mediarec == null)
         {
             mediarec = new MediaRecorder();
+
+            //REFERENCE on how to set up the audio recorder
+            //http://stackoverflow.com/questions/14181449/android-detect-sound-level
+
             //Sets the source to mic, output to and format to mp4 and aac as they are on most devices so chance are it should work on all.
             mediarec.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediarec.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -117,6 +131,7 @@ public class AudioDetect extends AppCompatActivity
             //I should probably have an exception error screen. Code for that will eventually go here.
         }
     }
+
     public double getAmplitude()
     {
         //If statement to avoid breaking stuff.
@@ -129,7 +144,7 @@ public class AudioDetect extends AppCompatActivity
         {
             return 0;
         }
-    }
+    }//END REFRENCE
 
     private class BackgroundThread extends AsyncTask<String,String, String>
     {
@@ -210,6 +225,7 @@ public class AudioDetect extends AppCompatActivity
             //changes the micstatus to done once it breaks the loop in the above section.
             micstatus.setText("DONE");
             stop();
+            finish();
             super.onPostExecute(result);
             // Do things like hide the progress bar or change a TextView
         }
@@ -250,6 +266,4 @@ Useful comments and logs for testing:
           Log.d("MainActivity.java","MAX"+ String.valueOf(max));
             Log.d("MainActivity.java","CUR"+ String.valueOf(cur));
             Log.d("MainActivity.java","HALF VOL"+ String.valueOf(half));
-
-
 */

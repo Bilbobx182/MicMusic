@@ -13,3 +13,4 @@ V.0.1.2: Functionality improved in the Sensitivity List View. It automatically r
 V.0.1.3: Refactored code to make it easier to understand in MainActivity and Audio class. Conformed to java standards.
 V.0.1.4: Fixed bug where it increased the volume instead of lowering it.
 V.0.1.5: Revered back to 1.4, made it so it will loop or not loop depending on the choices of the user.
+V.0.1.6: Fixed bugs, commented code. Added screenshots. Ready for publishing!
